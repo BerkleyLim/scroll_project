@@ -13,7 +13,7 @@ import com.example.scroll_project_back.entity.Board;
 import com.example.scroll_project_back.service.BoardService;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/board")
 public class BoardController {
   @Autowired
   BoardService boardService;
