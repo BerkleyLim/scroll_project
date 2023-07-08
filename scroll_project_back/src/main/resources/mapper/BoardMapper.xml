@@ -8,10 +8,11 @@
   </select>
 
   <insert id="insertBoard">
-    insert into scroll_board (title, contents) value (#{title},#{contents})
+    <!-- insert into scroll_board (title, contents) value (#{title}, #{contents}) -->
+    insert into scroll_board (title, contents) value (#{param1}, #{param2})
   </insert>
 
-  <update id="updateBoard" parameterType="Board">
+  <update id="updateBoard">
       update scroll_board set
       title=#{title} ,
       contents=#{contents} 
@@ -19,7 +20,7 @@
   </update>
 
   <delete id="deleteBoard">
-    delete from scroll_board wehre bno=#{bno}
+    delete from scroll_board where bno=#{bno}
   </delete>
   
   

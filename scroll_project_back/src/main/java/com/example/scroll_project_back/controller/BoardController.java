@@ -25,6 +25,7 @@ public class BoardController {
 
   @PostMapping("/insert/board")
   public Integer insertBoard(@RequestBody Board board) {
+    System.out.println(board.toString());
     return boardService.insertBoard(board.getTitle(), board.getContents());
   }
 
