@@ -7,27 +7,26 @@ import {
   Row,
   Col,
   Input,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  FormGroup,
 } from "reactstrap";
 import "./App.css";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import update from "immutability-helper";
+import ModalComponent from "./modal/ModalComponent";
 
 function App() {
   const [board, setBoard] = useState();
 
-  const [isUpdate, setIsUpdate] = useState(false);
+  const [message, setMessage] = useState();
+
+  const [mode, setMode] = useState("create");
+  
+  const [updateData, setUpdateData] = useState();
+  const [updateIndex, setUpdateIndex] = useState();
 
   const [isStateChange, setIsStateChange] = useState(false);
-
-  const [inputCreate, setInputCreate] = useState();
-
-  const [inputUpdate, setInputUpdate] = useState();
-
+  
+  
   const [isModal, setIsModal] = useState(false);
 
   const modalViewToggle = () => setIsModal(!isModal);
@@ -45,27 +44,27 @@ function App() {
       });
   }, []);
 
-  // 삽입
-  const createOnChange = (e) => {
-    const {name, value} = e.target;
-    setInputCreate({
-      ...inputCreate,
-      [name]: value
-    })
-    console.log(inputCreate)
-  }
+  console.log(board)
 
-  const createBoard = () => {
+  // 삽입
+  const readyChange = () => {
+    setMessage("추가");
+    setMode("create");
+    modalViewToggle();
+  };
+
+
+  const createBoard = (data) => {
     // front 화면에서 생성하는 것처럼 행동
     setBoard(
       update(board, {
-        $push: [inputCreate],
+        $push: [data],
       })
     );
 
     // 이후 api 호출 후 데이터 삽입
     axios
-      .post("http://localhost:8080/api/board/insert/board", inputCreate)
+      .post("http://localhost:8080/api/board/insert/board", data)
       .then((res) => {
         alert("생성 성공!!");
         console.log(res);
@@ -82,9 +81,9 @@ function App() {
     const deleteData = board[index];
     setBoard(
       update(board, {
-        $splice: [[index,1]],
+        $splice: [[index, 1]],
       })
-    )
+    );
     // 이후 api 호출 후 데이터 삭제
     axios
       .post("http://localhost:8080/api/board/delete/board", deleteData)
@@ -95,10 +94,38 @@ function App() {
       .catch((e) => {
         console.error(e);
       });
-  }
+  };
   // 삭제 끝
 
-  
+  // 수정 시작
+  const readyUpdate = (data, index) => {
+    setMessage("수정");
+    setMode("update");
+    modalViewToggle();
+    setUpdateData(data);
+    setUpdateIndex(index);
+  };
+
+  const updateBoard = (data, index) => {
+    setBoard(
+      update(board, {
+        $merge: {[index]: data},
+      }),
+    );
+    modalViewToggle();
+    setIsStateChange(!isStateChange);
+    // 이후 api 호출 후 데이터 수정
+    axios
+      .post("http://localhost:8080/api/board/update/board", data)
+      .then((res) => {
+        alert("수정 성공!!");
+        console.log(res);
+      })
+      .catch((e) => {
+        console.error(e);
+      });
+  };
+  // 수정 끝
 
   return (
     <div className="container">
@@ -117,23 +144,21 @@ function App() {
             <br />
             <br />
             <Row>
-              {isUpdate ? (
-                <Col sm={{ offset: 3, size: "auto" }}>
-                  <Input />
-                </Col>
-              ) : (
-                <>
-                  <Col sm={{ offset: 1, size: "auto" }}>
-                    <Button color="primary">자세히 보기</Button>
-                  </Col>
-                  <Col sm={{ offset: 3, size: "auto" }}>
-                    <Button color="warning">수정</Button>
-                  </Col>
-                  <Col sm={{ offset: 3, size: "auto" }}>
-                    <Button color="danger" onClick={() => deleteBoard(index)}>삭제</Button>
-                  </Col>
-                </>
-              )}
+              <Col sm={{ offset: 3, size: "auto" }}>
+                <Button
+                  color="primary"
+                  onClick={() => {
+                    readyUpdate(b, index);
+                  }}
+                >
+                  수정
+                </Button>
+              </Col>
+              <Col sm={{ offset: 4, size: "auto" }}>
+                <Button color="danger" onClick={() => deleteBoard(index)}>
+                  삭제
+                </Button>
+              </Col>
             </Row>
           </CardBody>
         </Card>
@@ -143,56 +168,21 @@ function App() {
       <br />
       <br />
       <Row>
-        <Button color="success" onClick={modalViewToggle}>
+        <Button color="success" onClick={() => {readyChange()}}>
           추가
         </Button>
       </Row>
 
-      <Modal
-        isOpen={isModal}
-        toggle={modalViewToggle}
-        centered={true}
-        fullscreen={true}
-      >
-        <ModalHeader toggle={modalViewToggle}>
-          추가할 게시글을 입력하세요
-        </ModalHeader>
-        <ModalBody>
-          <Card className="my-2" color="primary" outline>
-            <CardBody>
-              <FormGroup>
-                제목
-                <Input name="title" onChange={createOnChange}/>
-                내용
-                <CardText>
-                  <Input type="textarea" name="contents" onChange={createOnChange} />
-                </CardText>
-              </FormGroup>
-              <Row>
-                <Col sm={{ offset: 3, size: "auto" }}>
-                  <Button
-                    color="success"
-                    onClick={() => {
-                      createBoard();
-                    }}
-                  >
-                    추가
-                  </Button>
-                </Col>
-                <Col sm={{ offset: 4, size: "auto" }}>
-                  <Button
-                    onClick={() => {
-                      modalViewToggle()
-                    }}
-                  >
-                    닫기
-                  </Button>
-                </Col>
-              </Row>
-            </CardBody>
-          </Card>
-        </ModalBody>
-      </Modal>
+      <ModalComponent
+        isModal={isModal}
+        modalViewToggle={modalViewToggle}
+        createBoard={createBoard}
+        message={message}
+        mode={mode}
+        updateData={updateData}
+        updateIndex={updateIndex}
+        updateBoard={updateBoard}
+      />
     </div>
   );
 }
