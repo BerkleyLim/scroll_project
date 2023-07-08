@@ -4,8 +4,23 @@
   
   <!-- <select id="selectList" resultType="java.util.List"> -->
   <select id="selectList" resultType="Board">
-    select * from board
+    select * from scroll_board
   </select>
+
+  <insert id="insertBoard">
+    insert into scroll_board (title, contents) value (#{title},#{contents})
+  </insert>
+
+  <update id="updateBoard" parameterType="Board">
+      update scroll_board set
+      title=#{title} ,
+      contents=#{contents} 
+    where bno = #{bno}
+  </update>
+
+  <delete id="deleteBoard">
+    delete from scroll_board wehre bno=#{bno}
+  </delete>
   
   
 </mapper>

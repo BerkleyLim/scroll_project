@@ -11,4 +11,10 @@ import com.example.scroll_project_back.entity.Board;
 @Mapper
 public interface BoardMapper {
   List<Board> selectList();
+
+  Integer insertBoard(String title, String contents);
+
+  Integer updateBoard(Board board);
+
+  Integer deleteBoard(Long bno);
 }
