@@ -7,11 +7,10 @@ spring:
       enabled: true
 
   datasource:
-    hikari: 
-      jdbc-url: jdbc:mysql://localhost:3306/github?useSSL=false&serverTimezone=UTC&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true&autoReconnect=true
-      dataSourceClassName: com.mysql.cj.jdbc.Driver 
-      password: 1111 # 비밀번호 수정
-      username: root
+    url: jdbc:mysql://localhost:3306/github?useSSL=false&serverTimezone=UTC&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true&autoReconnect=true
+    driverClassName: com.mysql.cj.jdbc.Driver
+    password: 1111 # 비밀번호 수정
+    username: root
 
   devtools:
     livereload:

@@ -1,4 +1,4 @@
-package com.example.scroll_project_back.configration;
+package com.example.scroll_project_back.configuration;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
