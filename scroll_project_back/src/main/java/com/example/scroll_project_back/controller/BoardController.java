@@ -31,6 +31,8 @@ public class BoardController {
 
   @PostMapping("/update/board")
   public Integer updateBoard(@RequestBody Board board) {
+    System.out.println("수정");
+    System.out.println(board.toString());
     return boardService.updateBoard(board);
   }
 
