@@ -13,42 +13,72 @@ import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import update from "immutability-helper";
 import ModalComponent from "./modal/ModalComponent";
+import { useInView } from "react-intersection-observer";
 
 function App() {
-  const [board, setBoard] = useState();
+  const [board, setBoard] = useState([]);
 
   const [message, setMessage] = useState();
 
   const [mode, setMode] = useState("create");
-  
+
   const [updateData, setUpdateData] = useState();
   const [updateIndex, setUpdateIndex] = useState();
 
   const [isStateChange, setIsStateChange] = useState(false);
-  
-  
+
   const [isModal, setIsModal] = useState(false);
 
   const limit = 5;
   const [offset, setOffset] = useState(0);
 
+  const [ref, isScroll] = useInView();
+
   const modalViewToggle = () => setIsModal(!isModal);
 
-  // 첫 조회
-  useEffect(() => {
-    console.log(limit + " " + offset)
+  // 무한 스크롤 로직
+  const limitPaging = () => {
     axios
-      .get("http://localhost:8080/api/board/select/list?pageNumber=" + limit + "&startPage=" + offset+limit)
+      .get(
+        "http://localhost:8080/api/board/select/list?pageNumber=" +
+          limit +
+          "&startPage=" +
+          (offset +
+          limit)
+      )
       .then((res) => {
-        setBoard(res.data);
+        setBoard([...board, ...(res.data)]);
         console.log(res.data);
-        setOffset(limit+offset);
+        setOffset(limit + offset);
       })
       .catch((e) => {
         console.error(e);
       });
-  }, []);
+  };
 
+  useEffect(() => {
+    // isScroll이 true 일때만 실행
+    if (isScroll) {
+      // 실행할 함수
+      limitPaging();
+    }
+  }, [isScroll]);
+  // 무한 스크롤 로직 끝
+
+  // 첫 조회
+  // useEffect(() => {
+  //   console.log(limit + " " + offset)
+  //   axios
+  //     .get("http://localhost:8080/api/board/select/list?pageNumber=" + limit + "&startPage=" + offset+limit)
+  //     .then((res) => {
+  //       setBoard(res.data);
+  //       console.log(res.data);
+  //       setOffset(limit+offset);
+  //     })
+  //     .catch((e) => {
+  //       console.error(e);
+  //     });
+  // }, []);
 
   // 삽입
   const readyChange = () => {
@@ -56,7 +86,6 @@ function App() {
     setMode("create");
     modalViewToggle();
   };
-
 
   const createBoard = (data) => {
     // front 화면에서 생성하는 것처럼 행동
@@ -113,8 +142,8 @@ function App() {
   const updateBoard = (data, index) => {
     setBoard(
       update(board, {
-        $merge: {[index]: data},
-      }),
+        $merge: { [index]: data },
+      })
     );
     modalViewToggle();
     setIsStateChange(!isStateChange);
@@ -131,7 +160,7 @@ function App() {
   };
   // 수정 끝
 
-  
+
 
   return (
     <div className="container">
@@ -169,12 +198,18 @@ function App() {
           </CardBody>
         </Card>
       ))}
+      <div ref={ref}>데이터 없음</div>
       <br />
       <br />
       <br />
       <br />
       <Row>
-        <Button color="success" onClick={() => {readyChange()}}>
+        <Button
+          color="success"
+          onClick={() => {
+            readyChange();
+          }}
+        >
           추가
         </Button>
       </Row>
