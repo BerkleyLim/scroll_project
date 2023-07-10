@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.scroll_project_back.mapper.BoardMapper">
+  
+  <!-- <select id="selectList" resultType="java.util.List"> -->
+  <select id="selectList" resultType="Board">
+    select * from scroll_board
+    <!-- <if test='#{pageNumber} != null'> -->
+      <!-- limit #{pageNumber} -->
+    <if test='#{param1} != null'>
+      limit #{param1}
+    </if>
+    <!-- <if test='#{startPage} != null'>
+      offset #{startPage} -->
+    <if test='#{param2} != null'>
+      offset #{param2}
+    </if>
+  </select>
+
+  <insert id="insertBoard">
+    <!-- insert into scroll_board (title, contents) value (#{title}, #{contents}) -->
+    insert into scroll_board (title, contents) value (#{param1}, #{param2})
+  </insert>
+
+  <update id="updateBoard" parameterType="Board">
+      update scroll_board set
+      title=#{title} ,
+      contents=#{contents} 
+    where bno = #{bno}
+  </update>
+
+  <delete id="deleteBoard">
+    delete from scroll_board where bno=#{bno}
+  </delete>
+  
+  
+</mapper>
