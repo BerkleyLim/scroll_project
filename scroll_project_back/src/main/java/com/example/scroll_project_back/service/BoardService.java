@@ -13,8 +13,8 @@ public class BoardService {
   @Autowired
   BoardMapper boardMapper;
 
-  public List<Board> selectList() {
-    return boardMapper.selectList();
+  public List<Board> selectList(Long pageNumber, Long startPage) {
+    return boardMapper.selectList(pageNumber, startPage);
   }
 
   public Integer insertBoard(String title, String contents) {

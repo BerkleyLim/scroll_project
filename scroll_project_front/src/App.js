@@ -9,7 +9,7 @@ import {
   Input,
 } from "reactstrap";
 import "./App.css";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import update from "immutability-helper";
 import ModalComponent from "./modal/ModalComponent";
@@ -29,22 +29,26 @@ function App() {
   
   const [isModal, setIsModal] = useState(false);
 
+  const limit = 5;
+  const [offset, setOffset] = useState(0);
+
   const modalViewToggle = () => setIsModal(!isModal);
 
   // 첫 조회
   useEffect(() => {
+    console.log(limit + " " + offset)
     axios
-      .get("http://localhost:8080/api/board/select/list")
+      .get("http://localhost:8080/api/board/select/list?pageNumber=" + limit + "&startPage=" + offset+limit)
       .then((res) => {
         setBoard(res.data);
         console.log(res.data);
+        setOffset(limit+offset);
       })
       .catch((e) => {
         console.error(e);
       });
   }, []);
 
-  console.log(board)
 
   // 삽입
   const readyChange = () => {
@@ -126,6 +130,8 @@ function App() {
       });
   };
   // 수정 끝
+
+  
 
   return (
     <div className="container">

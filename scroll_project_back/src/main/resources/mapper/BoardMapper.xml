@@ -5,6 +5,16 @@
   <!-- <select id="selectList" resultType="java.util.List"> -->
   <select id="selectList" resultType="Board">
     select * from scroll_board
+    <!-- <if test='#{pageNumber} != null'> -->
+      <!-- limit #{pageNumber} -->
+    <if test='#{param1} != null'>
+      limit #{param1}
+    </if>
+    <!-- <if test='#{startPage} != null'>
+      offset #{startPage} -->
+    <if test='#{param2} != null'>
+      offset #{param2}
+    </if>
   </select>
 
   <insert id="insertBoard">

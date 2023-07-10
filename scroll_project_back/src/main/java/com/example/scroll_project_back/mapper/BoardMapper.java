@@ -10,7 +10,7 @@ import com.example.scroll_project_back.entity.Board;
 @Repository
 @Mapper
 public interface BoardMapper {
-  List<Board> selectList();
+  List<Board> selectList(Long pageNumber, Long startPage);
 
   Integer insertBoard(String title, String contents);
 
